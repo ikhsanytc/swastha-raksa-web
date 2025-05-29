@@ -1,49 +1,56 @@
 import type { FC } from "react";
-import type { activeNav } from "../types/activeNav";
 import { Link } from "react-router";
+import { navLinks, navLinksAdmin } from "../constants/navLink";
 
 type SidebarDesktopProps = {
-  active?: activeNav;
+  active?: string;
+  admin?: boolean;
 };
 
-const SidebarDesktop: FC<SidebarDesktopProps> = ({ active = "home" }) => {
+const SidebarDesktop: FC<SidebarDesktopProps> = ({
+  active = "home",
+  admin = false,
+}) => {
   return (
     <div className="bg-gray-900 h-screen w-64 fixed left-0 text-white lg:block hidden">
       <div className="px-10 py-14">
-        <img src="/logo.png" alt="" className="w-9 rounded-full" />
-        <h1 className="text-2xl mt-12">SwasthaRaksa.org</h1>
+        <Link to="/">
+          <img src="/logo.png" alt="" className="w-9 rounded-full" />
+        </Link>
+        <div className="mt-12"></div>
+        <Link to="/" className="text-2xl hover:underline">
+          Swastha Raksa
+        </Link>
       </div>
       <div className="flex flex-col gap-3 px-8">
-        <Link
-          to="/"
-          className={
-            active === "home"
-              ? "font-semibold"
-              : "font-light hover:text-white/80"
-          }
-        >
-          Home
-        </Link>
-        <Link
-          to="/about"
-          className={
-            active === "about"
-              ? "font-semibold"
-              : "font-light hover:text-white/80"
-          }
-        >
-          About
-        </Link>
-        <Link
-          to="/gallery"
-          className={
-            active === "gallery"
-              ? "font-semibold"
-              : "font-light hover:text-white/80"
-          }
-        >
-          Gallery
-        </Link>
+        {!admin &&
+          navLinks.map((item, idx) => (
+            <Link
+              to={item.path}
+              key={idx}
+              className={
+                active === item.title.toLowerCase()
+                  ? "font-semibold"
+                  : "font-light hover:text-white/80"
+              }
+            >
+              {item.title}
+            </Link>
+          ))}
+        {admin &&
+          navLinksAdmin.map((item, idx) => (
+            <Link
+              to={item.path}
+              key={idx}
+              className={
+                active.toLowerCase().trim() === item.title.toLowerCase().trim()
+                  ? "font-semibold"
+                  : "font-light hover:text-white/80"
+              }
+            >
+              {item.title}
+            </Link>
+          ))}
       </div>
     </div>
   );

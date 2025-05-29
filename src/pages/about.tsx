@@ -1,115 +1,98 @@
-import NavbarMobile from "../components/navbar-mobile";
-import SearchIconDesktop from "../components/search-icon-desktop";
-import SidebarDesktop from "../components/sidebar-desktop";
-import useAtTop from "../hooks/useAtTop";
-import { motion } from "motion/react";
+import Container from "../layout/container";
+
+export const aboutTexts = [
+  {
+    title: "Driving Policy Transformation",
+    content:
+      "SwasthaRaksa champions the urgent ratification of the WHO Framework Convention on Tobacco Control (FCTC) and strengthens Indonesia’s domestic regulations. We expose enforcement gaps—like weak vendor compliance near schools—using data from our nationwide research. By mobilizing policymakers, health experts, and communities, we push for laws mandating universal digital age verification, stricter penalties for violations, and retailer accountability. Our goal is to turn existing regulations (like Law 17/2023) from empty promises into ironclad safeguards.  ",
+  },
+  {
+    title: "Deploying Technology as a Shield",
+    content:
+      "At our core is the SwasthaRaksa app—a digital fortress against underage tobacco access. This innovation requires retailers to scan government-issued IDs for every tobacco sale, instantly verifying age and blocking transactions with minors. Real-time monitoring catalogs purchases nationwide, flagging violations to authorities while generating data to refine policies. Inspired by Singapore’s enforcement rigor and Australia’s compliance success, we embed this tool across markets, transforming point-of-sale interactions into a frontline defense for youth.",
+  },
+  {
+    title: "Cultivating Cultural Immunity",
+    content:
+      "We dismantle Indonesia’s permissive smoking culture through education and social persuasion. Guided by Everett Rogers’ Diffusion of Innovations theory, we run digital campaigns revealing tobacco’s health risks and industry tactics targeting youth. School programs equip adolescents to resist peer pressure, while community partnerships celebrate tobacco-free role models and compliant vendors. By replacing silence with storytelling, we spark a movement where health becomes the new social currency.",
+  },
+];
 
 const About = () => {
-  const { isAtTop } = useAtTop();
   return (
-    <div className="min-h-screen relative bg-blue-100">
-      {/* search icon */}
-      <SearchIconDesktop isAtTop={isAtTop} />
-
-      {/* sidebar desktop */}
-      <SidebarDesktop active="about" />
-      {/* navbar mobile */}
-      <NavbarMobile active="about" isAtTop={isAtTop} />
-      {/* main content */}
-      <div className="lg:ml-64">
-        <div className="relative h-[400px] w-full">
-          <div className="bg-blue-500/25 absolute flex justify-center items-center w-full h-full backdrop-filter backdrop-blur-[3px]">
-            <motion.h1
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              exit={{
-                opacity: 0,
-              }}
-              transition={{
-                duration: 0.5,
-                delay: 1,
-              }}
-              className="font-bold text-5xl text-white"
-            >
-              About
-            </motion.h1>
+    <Container page="about">
+      <section id="about">
+        <h1 className="md:text-4xl text-3xl font-semibold hover:underline">
+          GREETINGS FROM SWASTHA RAKSA
+        </h1>
+        <div className="mt-5 pb-5 flex flex-col">
+          <div className="mb-5">
+            <h2 className="text-2xl font-semibold">Who We Are</h2>
+            <p className="leading-relaxed mt-2 text-lg font-light">
+              SwasthaRaksa stands at the forefront of Indonesia’s battle against
+              adolescent tobacco addiction. Born from rigorous research by
+              Indonesian youth scholars, we fuse cutting-edge technology with
+              evidence-based advocacy to dismantle the systemic barriers
+              enabling underage smoking. Our name (SwasthaRaksa) embodies our
+              purpose: (Guardians of Health) in Sanskrit, reflecting our
+              commitment to shield Indonesia’s future generations from tobacco’s
+              deadly grip.
+            </p>
           </div>
-          <img
-            src="/banner.jpg"
-            alt=""
-            className="w-full h-[400px] object-cover object-center bg-local"
-          />
+          <div className="mb-5">
+            <h2 className="text-2xl font-semibold">Our Vision</h2>
+            <p className="leading-relaxed mt-2 text-lg font-light">
+              We envision an Indonesia where every adolescent grows free from
+              tobacco’s shadow—a nation where health triumphs over habit, and
+              policies transform into palpable protection. Through the strategic
+              integration of our SwasthaRaksa verification technology and
+              nationwide advocacy, we strive to eliminate minors’ access to
+              tobacco, rewrite social norms that normalize addiction, and
+              position Indonesia as a global beacon for innovative public health
+              solutions. Our ultimate dream is a tobacco-free generation
+              breathing freely, empowered by systems that prioritize their
+              well-being over profit.
+            </p>
+          </div>
+          <div className="mb-5">
+            <h2 className="text-2xl font-semibold">How We Create Change:</h2>
+            <ul className="list-decimal px-5">
+              {aboutTexts.map((item, idx) => (
+                <li key={idx} className="text-xl font-semibold">
+                  <h3 className="text-xl mt-2 font-semibold">{item.title}</h3>
+                  <p className="font-light leading-relaxed">{item.content}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="mb-5">
+            <h2 className="text-2xl font-semibold">Grounded in Evidence</h2>
+            <p className="leading-relaxed mt-2 text-lg font-light">
+              SwasthaRaksa emerged from unsettling truths: 85.5% of vendors near
+              schools sell tobacco to minors, social influence drives adolescent
+              addiction, and unenforced policies fuel a crisis claiming 223,500
+              lives annually. Our research proved that innovation diffusion—not
+              just regulation—holds the key to change. We blend these insights
+              with global models: Thailand’s e-cigarette bans, Australia’s plain
+              packaging, and Singapore’s ID checks. This science-backed approach
+              bridges the gap between knowing and doing.
+            </p>
+          </div>
+          <div className="mb-5">
+            <h2 className="text-2xl font-semibold">Join Our Movement</h2>
+            <p className="leading-relaxed mt-2 text-lg font-light">
+              SwasthaRaksa is more than an app—it’s a covenant with Indonesia’s
+              future. Whether you’re a student, parent, teacher, vendor, or
+              policymaker, your voice fuels this revolution. Together, we’ll
+              turn vision into victory: a generation liberated from addiction.
+            </p>
+          </div>
+          <h1 className="text-2xl font-bold">
+            Breath Freely. Resist Boldy. Unite for Change.
+          </h1>
         </div>
-        <div className="lg:px-14 px-5 pt-10 pb-10">
-          <section id="about">
-            <h1 className="md:text-4xl text-3xl font-semibold hover:underline">
-              GREETINGS FROM SWASTHA RAKSA
-            </h1>
-            <div className="mt-5 pb-5 flex flex-col gap-5">
-              <p className="font-light leading-relaxed text-xl">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad
-                illum, odit totam sequi dolorem cum obcaecati! Eius veniam
-                necessitatibus nemo soluta id asperiores exercitationem non,
-                aliquam repellendus, doloremque magnam nulla.
-              </p>
-              <p className="font-light leading-relaxed text-xl">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quae
-                nam placeat distinctio dolor mollitia saepe ratione, voluptatem
-                a fugiat nihil aut quo, rerum aspernatur. Dolores necessitatibus
-                non ratione est. Autem nihil nesciunt mollitia error provident
-                repellat ratione ad consequatur voluptatum!
-              </p>
-              <p className="font-light leading-relaxed text-xl">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fuga
-                ex sit vel dolore dicta mollitia vero consequuntur totam a,
-                quia, consectetur fugit iure quod ducimus! Dicta recusandae
-                eligendi veniam quibusdam provident rerum optio, perspiciatis
-                hic nemo architecto harum asperiores. Accusamus aut magnam
-                deleniti maiores possimus culpa quibusdam, soluta nobis vitae
-                aspernatur eligendi, numquam, illo repudiandae et. Voluptatem,
-                quis sint sunt, ut vero repellat voluptas adipisci eaque
-                temporibus rerum molestias accusamus eveniet harum corporis,
-                distinctio dicta vitae voluptatum nemo cumque soluta inventore
-                repudiandae enim. Voluptas quos nihil ea dolorem quam delectus
-                neque. Ab aspernatur porro magni ratione laboriosam est cumque
-                voluptate?
-              </p>
-              <p className="font-light leading-relaxed text-xl">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores
-                consequatur provident officiis, illo dolore quae nemo sed
-                possimus ducimus natus rerum. Totam soluta, sapiente
-                voluptatibus quis odit animi eligendi id tempora tempore nulla.
-                Impedit est quaerat suscipit accusamus, molestias maxime
-                distinctio, laboriosam sed iusto eveniet quod rem ut possimus
-                inventore animi porro quo provident aliquam magni! Repudiandae
-                minima facere odio nobis eaque, cumque, sint, aspernatur saepe
-                cum eum maiores impedit asperiores consequuntur quas sunt ab?
-                Doloribus ratione vel cupiditate dolore minima mollitia vero sed
-                assumenda, obcaecati iure. Architecto hic nulla porro iure nemo
-                accusamus? Consequuntur mollitia laborum dolore esse iure rerum
-                inventore. Facere, placeat, velit culpa consequatur adipisci
-                quibusdam nesciunt accusamus odio quo iure tenetur vitae
-                aspernatur dignissimos, error ipsam. Amet dolorum dignissimos
-                atque pariatur similique quos non eum vel blanditiis laudantium
-                reiciendis error, quasi dolores sequi fuga consequatur maxime?
-                Cum commodi, voluptatem distinctio repellendus aperiam
-                consequatur explicabo! Ullam placeat, excepturi quibusdam, vel
-                maiores optio fuga, alias quae molestias enim facere nam magni
-                iusto fugit aspernatur explicabo obcaecati laborum. Assumenda,
-                aut beatae accusantium recusandae, quam ratione voluptatibus
-                quis illum ab culpa officiis tempora ad iure expedita quas
-                provident nihil numquam eveniet quos cum esse! Numquam corporis
-                nam ratione quasi iusto.
-              </p>
-            </div>
-          </section>
-        </div>
-      </div>
-    </div>
+      </section>
+    </Container>
   );
 };
 

@@ -1,3 +1,28 @@
+type misiType = {
+  title: string;
+  content: string;
+};
+
+export const misi: misiType[] = [
+  {
+    title: "Drive Policy Transformation and National Accountability",
+    content:
+      "We advocate for Indonesia’s ratification of the WHO Framework Convention on Tobacco Control (FCTC) and the strengthening of domestic regulations inspired by global best practices (e.g., Australia’s advertising bans, Singapore’s enforcement rigor). Using empirical data from our research, including weak enforcement near schools and low retailer compliance. We will mobilize stakeholders to close legislative gaps, mandate universal age verification, and institutionalize SwasthaRaksa as a national tool for monitoring tobacco sales.  ",
+  },
+  {
+    title:
+      "Scale SwasthaRaksa as Indonesia’s Digital Shield Against Underage Access",
+    content:
+      "We deploy SwasthaRaksa as a secure, app-based ID verification system to every tobacco retailer nationwide. This innovation catalogs transactions in real time, blocks sales to minors via biometric/digital ID scans, and partners with authorities to penalize non-compliant vendors. By embedding this technology into regulatory frameworks, we transform point-of-sale compliance from an aspiration into an enforceable reality, directly addressing the accessibility crisis that are apparent in Indonesian society. ",
+  },
+  {
+    title:
+      "Cultivate Cultural Immunity Through Education and Social Persuasion",
+    content:
+      "We dismantle Indonesia’s permissive smoking culture using Everett Rogers’ Diffusion of Innovations theory. Our campaigns target adolescents, families, and communities with persuasive messaging on tobacco’s health risks, industry tactics, and positive alternatives. Through school programs, social media, and community partnerships, we shift norms that normalize youth smoking, celebrate compliant retailers, and equip youth to resist peer pressure, turning social influence from a driver of addiction into a catalyst for change.",
+  },
+];
+
 const VisiAndMisi = () => {
   return (
     <section id="visi&misi" className="mb-13">
@@ -7,23 +32,25 @@ const VisiAndMisi = () => {
       <div className="mb-5">
         <h2 className="text-2xl font-semibold hover:underline">Vision</h2>
         <p className="text-lg mt-1 leading-relaxed font-light">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae
-          accusantium ex veritatis placeat consectetur dignissimos eos iure ab,
-          optio magnam. Praesentium veritatis eius harum voluptatum, totam,
-          veniam nisi quisquam in voluptas, voluptate culpa eos temporibus
-          suscipit rem esse numquam soluta? Tempora architecto in cum,
-          exercitationem cupiditate assumenda sit quidem praesentium?
+          We envision Indonesia where every adolescent is empowered to thrive in
+          a tobacco-free future, protected by rigorous policies, cutting-edge
+          technology, and transformed social norms. Through the strategic
+          integration of SwasthaRaksa and evidence-driven reforms, we commit to
+          dismantling systemic barriers to youth health, ensuring tobacco
+          products become inaccessible to minors, and fostering a generation
+          liberated from addiction’s grip. Our ultimate goal is a nation where
+          public health triumphs over commercial interests, and Indonesia
+          emerges as a global leader in innovative tobacco control.
         </p>
       </div>
       <div>
         <h2 className="text-2xl font-semibold hover:underline">Mission</h2>
-        <ul className="list-disc text-xl leading-relaxed font-light px-5">
-          {Array.from({ length: 5 }).map((_, idx) => (
-            <li className="mt-2" key={idx}>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae
-              aspernatur consectetur id quod rem sunt distinctio quasi
-              reprehenderit dolore ratione temporibus, nesciunt iste quo, quos
-              vel obcaecati maiores minima! Neque.
+        <ul className="list-decimal text-xl leading-relaxed font-light px-5">
+          {misi.map((mission, idx) => (
+            <li className="" key={idx}>
+              <span className="font-semibold">{mission.title}</span>
+              <br />
+              {mission.content}
             </li>
           ))}
         </ul>

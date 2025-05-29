@@ -4,18 +4,24 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { useEffect, useRef, useState, type FC } from "react";
-import { motion } from "motion/react";
 import { Link } from "react-router";
-import type { activeNav } from "../types/activeNav";
+import SearchOverlay from "./search-overlay";
+import { navLinks, navLinksAdmin } from "../constants/navLink";
 
 type NavbarMobileProps = {
   isAtTop: boolean;
-  active?: activeNav;
+  active?: string;
+  admin?: boolean;
 };
 
-const NavbarMobile: FC<NavbarMobileProps> = ({ isAtTop, active = "home" }) => {
+const NavbarMobile: FC<NavbarMobileProps> = ({
+  isAtTop,
+  active = "home",
+  admin = false,
+}) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -49,6 +55,7 @@ const NavbarMobile: FC<NavbarMobileProps> = ({ isAtTop, active = "home" }) => {
           alt=""
         />
       </div> */}
+      <SearchOverlay setShowSearch={setShowSearch} showSearch={showSearch} />
       <div
         className={`absolute bg-black/50 w-full h-full z-[88] backdrop-filter backdrop-blur-sm ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
@@ -64,14 +71,11 @@ const NavbarMobile: FC<NavbarMobileProps> = ({ isAtTop, active = "home" }) => {
         <div className="h-14 flex text-white items-center px-4 justify-between">
           <div className="flex gap-3">
             <Bars3Icon width={24} onClick={() => setShowSidebar(true)} />
-            <motion.img
-              layoutId="logo"
-              src="/logo.png"
-              className="w-9 rounded-full"
-              alt=""
-            />
+            <Link to="/">
+              <img src="/logo.png" className="w-9 rounded-full" alt="" />
+            </Link>
           </div>
-          <MagnifyingGlassIcon width={24} />
+          <MagnifyingGlassIcon width={24} onClick={() => setShowSearch(true)} />
         </div>
       </nav>
       <div
@@ -82,24 +86,34 @@ const NavbarMobile: FC<NavbarMobileProps> = ({ isAtTop, active = "home" }) => {
       >
         <XMarkIcon width={24} onClick={() => setShowSidebar(false)} />
         <div className="mt-10 mb-10 px-8 flex flex-col gap-4">
-          <Link
-            to="/"
-            className={active == "home" ? "font-semibold" : "font-light"}
-          >
-            Home
-          </Link>
-          <Link
-            to="/about"
-            className={active == "about" ? "font-semibold" : "font-light"}
-          >
-            About
-          </Link>
-          <Link
-            to="/gallery"
-            className={active == "gallery" ? "font-semibold" : "font-light"}
-          >
-            Gallery
-          </Link>
+          {!admin &&
+            navLinks.map((item, idx) => (
+              <Link
+                to={item.path}
+                key={idx}
+                className={
+                  active == item.title.toLowerCase()
+                    ? "font-semibold"
+                    : "font-light"
+                }
+              >
+                {item.title}
+              </Link>
+            ))}
+          {admin &&
+            navLinksAdmin.map((item, idx) => (
+              <Link
+                to={item.path}
+                key={idx}
+                className={
+                  active == item.title.toLowerCase()
+                    ? "font-semibold"
+                    : "font-light"
+                }
+              >
+                {item.title}
+              </Link>
+            ))}
         </div>
       </div>
     </>
