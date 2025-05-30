@@ -16,10 +16,6 @@ export const navLinks: navLinkType[] = [
     title: "Gallery",
     path: "/gallery",
   },
-  {
-    title: "Admin",
-    path: "/admin",
-  },
 ];
 
 export const navLinksAdmin: navLinkType[] = [
@@ -30,5 +26,9 @@ export const navLinksAdmin: navLinkType[] = [
   {
     title: "Add Article",
     path: "/admin/add_article",
+  },
+  {
+    title: "Logout",
+    path: "/admin/logout",
   },
 ];

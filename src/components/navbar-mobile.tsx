@@ -7,21 +7,25 @@ import { useEffect, useRef, useState, type FC } from "react";
 import { Link } from "react-router";
 import SearchOverlay from "./search-overlay";
 import { navLinks, navLinksAdmin } from "../constants/navLink";
+import useUser from "../hooks/useUser";
 
 type NavbarMobileProps = {
   isAtTop: boolean;
   active?: string;
   admin?: boolean;
+  isArticle?: boolean;
 };
 
 const NavbarMobile: FC<NavbarMobileProps> = ({
   isAtTop,
   active = "home",
   admin = false,
+  isArticle = false,
 }) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [showSearch, setShowSearch] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -68,14 +72,33 @@ const NavbarMobile: FC<NavbarMobileProps> = ({
             : "bg-gray-900/80 backdrop-filter backdrop-blur-sm"
         } z-50 fixed top-0 w-full transition duration-300 lg:hidden`}
       >
-        <div className="h-14 flex text-white items-center px-4 justify-between">
-          <div className="flex gap-3">
-            <Bars3Icon width={24} onClick={() => setShowSidebar(true)} />
+        <div
+          className={`h-14 flex text-white items-center px-4 justify-between`}
+        >
+          <div className="flex gap-3 items-center">
+            <Bars3Icon
+              width={24}
+              onClick={() => setShowSidebar(true)}
+              color={isArticle && isAtTop ? "black" : "white"}
+            />
             <Link to="/">
               <img src="/logo.png" className="w-9 rounded-full" alt="" />
             </Link>
+            <Link to="/">
+              <p
+                className={`${
+                  isArticle && isAtTop ? "text-black" : "text-white"
+                } text-xl font-semibold`}
+              >
+                Swastha Raksa
+              </p>
+            </Link>
           </div>
-          <MagnifyingGlassIcon width={24} onClick={() => setShowSearch(true)} />
+          <MagnifyingGlassIcon
+            width={24}
+            onClick={() => setShowSearch(true)}
+            color={isArticle && isAtTop ? "black" : "white"}
+          />
         </div>
       </nav>
       <div
@@ -86,20 +109,30 @@ const NavbarMobile: FC<NavbarMobileProps> = ({
       >
         <XMarkIcon width={24} onClick={() => setShowSidebar(false)} />
         <div className="mt-10 mb-10 px-8 flex flex-col gap-4">
-          {!admin &&
-            navLinks.map((item, idx) => (
+          {!admin && (
+            <>
+              {navLinks.map((item, idx) => (
+                <Link
+                  to={item.path}
+                  key={idx}
+                  className={
+                    active.toLowerCase().trim() ===
+                    item.title.toLowerCase().trim()
+                      ? "font-semibold"
+                      : "font-light hover:text-white/80"
+                  }
+                >
+                  {item.title}
+                </Link>
+              ))}
               <Link
-                to={item.path}
-                key={idx}
-                className={
-                  active == item.title.toLowerCase()
-                    ? "font-semibold"
-                    : "font-light"
-                }
+                to={user ? "/admin" : "/admin/login"}
+                className="font-light hover:text-white/80"
               >
-                {item.title}
+                {user ? "Admin" : "Login"}
               </Link>
-            ))}
+            </>
+          )}
           {admin &&
             navLinksAdmin.map((item, idx) => (
               <Link

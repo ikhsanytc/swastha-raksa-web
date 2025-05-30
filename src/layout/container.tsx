@@ -7,13 +7,13 @@ import type { FC, ReactNode } from "react";
 
 type ContainerProps = {
   children: ReactNode;
-  page?: "home" | "about" | "gallery";
+  page?: string;
 };
 
 const Container: FC<ContainerProps> = ({ children, page = "home" }) => {
   const { isAtTop } = useAtTop();
   return (
-    <div className="min-h-screen relative bg-blue-100" id="badan">
+    <div className="min-h-screen flex flex-col relative bg-blue-100" id="badan">
       {/* search icon */}
       <SearchIconDesktop isAtTop={isAtTop} />
 
@@ -22,7 +22,7 @@ const Container: FC<ContainerProps> = ({ children, page = "home" }) => {
       {/* navbar mobile */}
       <NavbarMobile isAtTop={isAtTop} active={page} />
       {/* main content */}
-      <div className="lg:ml-64">
+      <div className="lg:ml-64 flex-1 flex flex-col">
         <div className="relative h-[400px] w-full">
           <div className="bg-blue-500/25 absolute flex justify-center items-center w-full h-full backdrop-filter backdrop-blur-[3px]">
             <motion.h1

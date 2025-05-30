@@ -9,3 +9,9 @@ export async function getUser() {
   } = await supabase.auth.getUser();
   return user;
 }
+
+export const getStoragePath = (url: string) => {
+  const marker = "/storage/v1/object/public/";
+  const index = url.indexOf(marker);
+  return index !== -1 ? url.slice(index + marker.length) : "";
+};

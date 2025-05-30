@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ContainerAdmin from "../../layout/admin/container";
 import "quill/dist/quill.snow.css";
 import { useQuill } from "react-quilljs";
@@ -6,12 +6,13 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "../../lib/supabase";
-import { useLoaderData } from "react-router";
+import { useRouteLoaderData } from "react-router";
 import type { User } from "@supabase/supabase-js";
 import { toast } from "react-toastify";
 import slugify from "../../lib/slug";
 
-const articleScheme = z.object({
+// Schema untuk validasi form
+const articleSchema = z.object({
   image: z.any().refine((files) => files?.length === 1, "Image required."),
   title: z.string().min(3, "Title minimum 3 characters"),
   description: z.string().min(5, "Description minimum 5 characters"),
@@ -19,8 +20,17 @@ const articleScheme = z.object({
 
 const AddArticle = () => {
   const { quillRef, quill } = useQuill({ placeholder: "Content" });
-  const { user }: { user: User | null } = useLoaderData();
+  const routeData = useRouteLoaderData<{ user: User | null }>("admin-root");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Cegah render jika belum ada data user
+  if (!routeData) {
+    return <div className="bg-blue-100 min-h-screen"></div>;
+  }
+
+  const { user } = routeData;
   const [isLoading, setIsLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -28,15 +38,19 @@ const AddArticle = () => {
     setError,
     setValue,
     watch,
-  } = useForm<z.infer<typeof articleScheme>>({
-    resolver: zodResolver(articleScheme),
+  } = useForm<z.infer<typeof articleSchema>>({
+    resolver: zodResolver(articleSchema),
     defaultValues: {
       title: "",
       description: "",
     },
   });
+
   const imageFile = watch("image")?.[0];
-  const submit: SubmitHandler<z.infer<typeof articleScheme>> = async ({
+  const textTitleValue = watch("title", "");
+  const isLongTitle = textTitleValue.length > 30;
+
+  const onSubmit: SubmitHandler<z.infer<typeof articleSchema>> = async ({
     description,
     title,
     image,
@@ -44,31 +58,37 @@ const AddArticle = () => {
     if (!user) {
       throw new Error("Harus login");
     }
+
     const file = image?.[0] as File;
     const fileName = `${Date.now()}-${file.name}`;
     const content = quill?.root.innerHTML;
-    if (quill?.getText() === "") {
-      throw new Error("Content required");
+
+    if (!content || quill.getText().trim() === "") {
+      toast.error("Content required");
+      return;
     }
+
     try {
       setIsLoading(true);
-      const { error: ErrorUpload, data } = await supabase.storage
+
+      const { error: uploadError, data: uploadData } = await supabase.storage
         .from("thumbnail")
-        .upload(`${fileName}`, file, {
+        .upload(fileName, file, {
           cacheControl: "3600",
           upsert: false,
         });
-      if (ErrorUpload) {
+
+      if (uploadError) {
         setIsLoading(false);
-        setError("image", {
-          message: ErrorUpload.message,
-        });
+        setError("image", { message: uploadError.message });
         return;
       }
+
       const {
         data: { publicUrl },
-      } = supabase.storage.from("thumbnail").getPublicUrl(data.path);
-      const { error } = await supabase.from("article").insert({
+      } = supabase.storage.from("thumbnail").getPublicUrl(uploadData.path);
+
+      const { error: insertError } = await supabase.from("article").insert({
         slug: slugify(title),
         title,
         description,
@@ -76,89 +96,104 @@ const AddArticle = () => {
         id_user: user.id,
         thumbnail: publicUrl,
       });
-      if (error) {
-        throw new Error(error.message);
+
+      if (insertError) {
+        throw new Error(insertError.message);
       }
+
+      // Reset form
       setIsLoading(false);
+      setValue("title", "");
       setValue("description", "");
       setValue("image", null);
-      setValue("title", "");
-      quill?.setText("");
+      quill.setText("");
       toast.success("Success create article");
     } catch (e: any) {
       setIsLoading(false);
-      if (e.message) {
-        toast.error(e.message);
-        return;
-      }
-      toast.error("Unexpected error");
+      toast.error(e?.message || "Unexpected error");
+    }
+  };
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
   return (
     <ContainerAdmin page="addArticle">
-      <h1 className="font-bold text-3xl">ADD ARTICLE</h1>
-      <form onSubmit={handleSubmit(submit)}>
-        <div className="flex flex-col gap-8 mt-5">
-          <div className="w-full">
-            <div className="mb-5">
-              <img
-                src={
-                  imageFile
-                    ? URL.createObjectURL(imageFile)
-                    : "https://placehold.co/554x544?text=Placeholder"
-                }
-                className="w-64"
-                alt=""
-              />
-              <p className="text-red-600 mt-1">
-                {errors.image?.message as string}
-              </p>
-            </div>
-            <label
-              htmlFor="image"
-              className="py-2 px-4 bg-transparent border-1 cursor-pointer active:scale-95 transition duration-150"
-            >
-              Upload Thumbnail
-            </label>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col gap-4 justify-center items-center mb-32">
+          <div>
+            <img
+              className="w-64 h-64 object-cover object-center cursor-pointer"
+              alt=""
+              onClick={handleImageClick}
+              src={
+                imageFile
+                  ? URL.createObjectURL(imageFile)
+                  : "https://placehold.co/256x256?text=Click+to+upload"
+              }
+            />
+            <p className="text-red-600 text-center">
+              {errors.image?.message as string}
+            </p>
             <input
               type="file"
               accept="image/*"
               className="hidden"
-              disabled={isLoading}
               id="image"
               {...register("image")}
+              ref={(e) => {
+                register("image").ref(e);
+                fileInputRef.current = e;
+              }}
             />
           </div>
           <div>
-            <input
-              type="text"
-              placeholder="Title"
-              className={`lg:w-1/2 w-full border-b-1 outline-none text-xl ${
-                errors.title ? "border-red-600 text-red-600" : ""
-              }`}
-              {...register("title")}
-            />
-            <p className="text-red-600 mt-1">{errors.title?.message}</p>
+            {isLongTitle ? (
+              <textarea
+                className={`outline-none text-center border-b-1 md:text-5xl text-3xl ${
+                  errors.title ? "text-red-600" : ""
+                }`}
+                placeholder="Title..."
+                autoFocus
+                {...register("title")}
+                rows={Math.ceil(textTitleValue.length / 30)}
+              ></textarea>
+            ) : (
+              <input
+                type="text"
+                className={`outline-none text-center border-b-1 md:text-5xl text-3xl ${
+                  errors.title ? "text-red-600" : ""
+                }`}
+                autoFocus
+                placeholder="Title..."
+                {...register("title")}
+              />
+            )}
+            <p className="text-red-600 mt-2">{errors.title?.message}</p>
           </div>
-          <div>
-            <textarea
-              id="desc"
-              placeholder="Description"
-              className={`lg:w-1/2 w-full outline-none border-b-1 text-xl ${
-                errors.description ? "border-red-600 text-red-600" : ""
-              }`}
-              {...register("description")}
-            ></textarea>
-            <p className="text-red-600 mt-1">{errors.description?.message}</p>
-          </div>
-          <div>
-            <div ref={quillRef}></div>
+          <div className="w-full">
+            <div className="w-full flex justify-center items-center">
+              <textarea
+                id="desc"
+                placeholder="Description..."
+                className={`outline-none border-b-1 w-full md:w-2/3 text-xl ${
+                  errors.description ? "text-red-600" : ""
+                }`}
+                {...register("description")}
+              ></textarea>
+            </div>
+            <p className="text-red-600 mt-2">{errors.description?.message}</p>
           </div>
         </div>
+        <div className="h-96 mb-5">
+          <div ref={quillRef}></div>
+        </div>
+
         <button
           type="submit"
           disabled={isLoading}
-          className="border-1 py-2 px-4 mt-10 cursor-pointer w-full not-disabled:active:scale-95 transition duration-150 disabled:cursor-not-allowed disabled:bg-slate-400"
+          className="border-1 py-2 px-4 mt-10 cursor-pointer w-full not-disabled:active:scale-95 transition duration-150 disabled:cursor-not-allowed disabled:bg-slate-400 md:mt-10 mt-24"
         >
           Submit
         </button>

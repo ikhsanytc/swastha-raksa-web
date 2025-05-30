@@ -5,10 +5,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { z } from "zod";
 import { supabase } from "../../lib/supabase";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const loginScheme = z.object({
   email: z.string().min(8),
@@ -28,6 +29,7 @@ const Login = () => {
       password: "",
     },
   });
+  const nav = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const submit: SubmitHandler<z.infer<typeof loginScheme>> = async ({
@@ -43,8 +45,9 @@ const Login = () => {
       if (error) {
         throw new Error(error.message);
       }
-      alert("Success");
+      toast.success("Welcome admin");
       setIsLoading(false);
+      nav("/admin");
     } catch (e: any) {
       setIsLoading(false);
       if (e.message && e.message == "Invalid login credentials") {
@@ -57,10 +60,10 @@ const Login = () => {
         return;
       }
       if (e.message) {
-        alert(e.message);
+        toast.error(e.message);
         return;
       }
-      alert("unknown error");
+      toast.error("Unexpected error");
     }
   };
   return (

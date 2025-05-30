@@ -32,6 +32,7 @@ const FotoFoto = () => {
               <img
                 src={item.thumbnail}
                 className="w-64 h-64 object-cover object-center"
+                loading="lazy"
                 alt=""
               />
               <Link
@@ -47,6 +48,7 @@ const FotoFoto = () => {
             <div className="flex flex-col gap-4" key={idx}>
               <img
                 src="https://placehold.co/256x256?text=Loading..."
+                loading="lazy"
                 className="w-64 h-64 object-cover object-center animate-pulse"
                 alt=""
               />
