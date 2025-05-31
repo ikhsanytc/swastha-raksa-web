@@ -203,7 +203,7 @@ const EditArticle = () => {
             ref={editorRef}
             value={content}
             config={{
-              height: 400,
+              height: 600,
               style: {
                 backgroundColor: "#DBEAFE",
               },

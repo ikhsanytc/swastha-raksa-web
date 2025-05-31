@@ -194,7 +194,7 @@ const AddArticle = () => {
             value={content}
             config={{
               readonly: false,
-              height: 400,
+              height: 600,
               toolbarAdaptive: false,
               style: {
                 backgroundColor: "#DBEAFE",
