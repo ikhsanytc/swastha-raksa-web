@@ -9,9 +9,10 @@ import { getStoragePath, supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const editArticleScheme = z.object({
-  image: z.any().refine((files) => files?.length === 1, "Image required."),
+  image: z.any(),
   title: z.string().min(3, "Title minimum 3 characters"),
   description: z.string().min(5, "Description minimum 5 characters"),
 });
@@ -28,6 +29,7 @@ const EditArticle = () => {
     setError,
     formState: { errors },
   } = useForm<z.infer<typeof editArticleScheme>>({
+    resolver: zodResolver(editArticleScheme),
     defaultValues: {
       title: article?.title,
       description: article?.description,
@@ -40,6 +42,8 @@ const EditArticle = () => {
   }
 
   const imageFile = watch("image")?.[0] as File;
+  const textValueTitle = watch("title");
+  const isLongTitle = textValueTitle.length > 30;
 
   useEffect(() => {
     if (quill) {
@@ -164,6 +168,9 @@ const EditArticle = () => {
               className="w-64 h-64 object-cover object-center cursor-pointer"
               alt=""
             />
+            <p className="text-red-600 text-center mt-2">
+              {errors.image?.message as string}
+            </p>
             <input
               type="file"
               className="hidden"
@@ -174,21 +181,42 @@ const EditArticle = () => {
               }}
             />
           </div>
-          <input
-            type="text"
-            className="outline-none text-center border-b-1 md:text-5xl text-3xl"
-            placeholder="Title..."
-            {...register("title")}
-          />
+          <div>
+            {isLongTitle ? (
+              <textarea
+                className={`outline-none text-center border-b-1 md:text-5xl text-3xl ${
+                  errors.title ? "text-red-600" : ""
+                }`}
+                placeholder="Title..."
+                autoFocus
+                {...register("title")}
+                rows={Math.ceil(textValueTitle.length / 30)}
+              ></textarea>
+            ) : (
+              <input
+                type="text"
+                className={`outline-none text-center border-b-1 md:text-5xl text-3xl ${
+                  errors.title ? "text-red-600" : ""
+                }`}
+                autoFocus
+                placeholder="Title..."
+                {...register("title")}
+              />
+            )}
+            <p className="text-red-600 mt-2">{errors.title?.message}</p>
+          </div>
           <div className="w-full">
             <div className="w-full flex justify-center items-center">
               <textarea
                 id="desc"
                 placeholder="Description..."
-                className="outline-none border-b-1 md:text-xl w-full md:w-2/3"
+                className={`outline-none border-b-1 w-full md:w-2/3 text-xl ${
+                  errors.description ? "text-red-600" : ""
+                }`}
                 {...register("description")}
               ></textarea>
             </div>
+            <p className="text-red-600 mt-2">{errors.description?.message}</p>
           </div>
         </div>
         <div className="h-96 mb-5">
