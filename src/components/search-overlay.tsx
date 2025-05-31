@@ -75,11 +75,8 @@ const SearchOverlay: FC<SearchOverlayProps> = ({
         <div className="flex flex-col gap-4 mt-3 text-white overflow-auto max-h-3/4">
           {!isLoading &&
             articles?.map((item, idx) => (
-              <Link to={`/article/${item.slug}`}>
-                <div
-                  className="w-full bg-slate-100/10 p-2 rounded cursor-pointer hover:bg-slate-100/20 duration-150 transition active:bg-slate-100/30"
-                  key={idx}
-                >
+              <Link to={`/article/${item.slug}`} key={idx}>
+                <div className="w-full bg-slate-100/10 p-2 rounded cursor-pointer hover:bg-slate-100/20 duration-150 transition active:bg-slate-100/30">
                   <p className="font-semibold">{item.title}</p>
                   <p className="text-sm font-light">{item.description}</p>
                 </div>

@@ -5,6 +5,10 @@ body {
   font-family: "Ancizar Serif", sans-serif;
 }
 
-.ql-editor {
-  font-family: inherit;
+ul {
+  @apply list-disc list-inside pl-5 my-4;
+}
+
+ol {
+  @apply list-decimal list-inside pl-5 my-4;
 }

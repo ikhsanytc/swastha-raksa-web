@@ -1,15 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import type { ArticleType } from "../../types/article";
 import NotFound from "../notfound";
 import ContainerArticle from "../../layout/containerArticle";
-import { useQuill } from "react-quilljs";
-import "quill/dist/quill.snow.css";
 import { getStoragePath, supabase } from "../../lib/supabase";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import JoditEditor from "jodit-react";
 
 const editArticleScheme = z.object({
   image: z.any(),
@@ -19,9 +18,11 @@ const editArticleScheme = z.object({
 
 const EditArticle = () => {
   const { article }: { article: ArticleType | null } = useLoaderData();
-  const { quill, quillRef } = useQuill();
   const [isLoading, setIsLoading] = useState(false);
+  const [content, setContent] = useState(article?.content || "");
   const fileRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef(null);
+
   const {
     register,
     handleSubmit,
@@ -36,57 +37,44 @@ const EditArticle = () => {
       image: null,
     },
   });
+
   const nav = useNavigate();
-  if (!article) {
-    return <NotFound message="Article is not found" />;
-  }
+  if (!article) return <NotFound message="Article is not found" />;
 
   const imageFile = watch("image")?.[0] as File;
   const textValueTitle = watch("title");
   const isLongTitle = textValueTitle.length > 30;
 
-  useEffect(() => {
-    if (quill) {
-      quill.clipboard.dangerouslyPasteHTML(article.content);
-    }
-  }, [quill]);
   const handleOnDelete = async () => {
     const question = confirm("Are you sure?");
-    if (!question) {
-      return;
-    }
+    if (!question) return;
+
     const path = getStoragePath(article.thumbnail);
     try {
       const { error: ErrorDeleteArticle } = await supabase
         .from("article")
         .delete()
         .eq("id", article.id);
-      if (ErrorDeleteArticle) {
-        throw new Error(ErrorDeleteArticle.message);
-      }
+      if (ErrorDeleteArticle) throw new Error(ErrorDeleteArticle.message);
+
       const { error: ErrorDeleteStorage } = await supabase.storage
         .from("thumbnail")
         .remove([path]);
-      if (ErrorDeleteStorage) {
-        throw new Error(ErrorDeleteStorage.message);
-      }
+      if (ErrorDeleteStorage) throw new Error(ErrorDeleteStorage.message);
+
       toast.success("Success to delete article");
       nav("/");
     } catch (e: any) {
-      if (e.message) {
-        toast.error(e.message);
-        return;
-      }
-      toast.error("Unexpected error");
+      toast.error(e.message || "Unexpected error");
     }
   };
+
   const onSubmit: SubmitHandler<z.infer<typeof editArticleScheme>> = async ({
     description,
     title,
     image,
   }) => {
-    const content = quill?.root.innerHTML;
-    if (!content || quill.getText().trim() === "") {
+    if (!content || content.replace(/<[^>]+>/g, "").trim() === "") {
       toast.error("Content is required!");
       return;
     }
@@ -97,36 +85,31 @@ const EditArticle = () => {
       if (file) {
         const fileName = `${Date.now()}-${file.name}`;
         const fileNameToDelete = getStoragePath(article.thumbnail);
-        // delete file sebelumnya
+
         const { error: ErrorDeleteFile } = await supabase.storage
           .from("thumbnail")
           .remove([fileNameToDelete]);
         if (ErrorDeleteFile) {
           setIsLoading(false);
-          setError("image", {
-            message: ErrorDeleteFile.message,
-          });
+          setError("image", { message: ErrorDeleteFile.message });
           return;
         }
-        // upload file
+
         const { error: ErrorUpload, data: UploadData } = await supabase.storage
           .from("thumbnail")
-          .upload(fileName, file, {
-            cacheControl: "3600",
-            upsert: false,
-          });
+          .upload(fileName, file, { cacheControl: "3600", upsert: false });
         if (ErrorUpload) {
           setIsLoading(false);
-          setError("image", {
-            message: ErrorUpload.message,
-          });
+          setError("image", { message: ErrorUpload.message });
           return;
         }
+
         const {
           data: { publicUrl: publicUrlSupabase },
         } = supabase.storage.from("thumbnail").getPublicUrl(UploadData.path);
         publicUrl = publicUrlSupabase;
       }
+
       const { error: ErrorUpdate } = await supabase
         .from("article")
         .update({
@@ -136,37 +119,30 @@ const EditArticle = () => {
           content,
         })
         .eq("id", article.id);
-      if (ErrorUpdate) {
-        throw new Error(ErrorUpdate.message);
-      }
+      if (ErrorUpdate) throw new Error(ErrorUpdate.message);
+
       toast.success("Success edit article");
       nav(`/article/${article.slug}`);
     } catch (e: any) {
       setIsLoading(false);
-      if (e.message) {
-        toast.error(e.message);
-        return;
-      }
-      toast.error("Unexpected error");
+      toast.error(e.message || "Unexpected error");
     }
   };
-  const handleOnClickImage = () => {
-    if (fileRef.current) {
-      fileRef.current.click();
-    }
-  };
+
+  const handleOnClickImage = () => fileRef.current?.click();
+
   return (
     <ContainerArticle article={article} isEditArticle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-4 justify-center items-center mb-32">
-          <div className="">
+          <div>
             <img
               src={
                 imageFile ? URL.createObjectURL(imageFile) : article.thumbnail
               }
               onClick={handleOnClickImage}
               className="w-64 h-64 object-cover object-center cursor-pointer"
-              alt=""
+              alt="thumbnail"
             />
             <p className="text-red-600 text-center mt-2">
               {errors.image?.message as string}
@@ -181,6 +157,7 @@ const EditArticle = () => {
               }}
             />
           </div>
+
           <div>
             {isLongTitle ? (
               <textarea
@@ -205,6 +182,7 @@ const EditArticle = () => {
             )}
             <p className="text-red-600 mt-2">{errors.title?.message}</p>
           </div>
+
           <div className="w-full">
             <div className="w-full flex justify-center items-center">
               <textarea
@@ -219,9 +197,21 @@ const EditArticle = () => {
             <p className="text-red-600 mt-2">{errors.description?.message}</p>
           </div>
         </div>
-        <div className="h-96 mb-5">
-          <div ref={quillRef}></div>
+
+        <div className="mb-5">
+          <JoditEditor
+            ref={editorRef}
+            value={content}
+            config={{
+              height: 400,
+              style: {
+                backgroundColor: "#DBEAFE",
+              },
+            }}
+            onBlur={(newContent) => setContent(newContent)}
+          />
         </div>
+
         <button
           type="submit"
           disabled={isLoading}
@@ -229,6 +219,7 @@ const EditArticle = () => {
         >
           Submit
         </button>
+
         <button
           type="button"
           disabled={isLoading}

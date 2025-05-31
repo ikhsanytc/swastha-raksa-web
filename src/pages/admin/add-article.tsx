@@ -1,7 +1,5 @@
 import { useRef, useState } from "react";
 import ContainerAdmin from "../../layout/admin/container";
-import "quill/dist/quill.snow.css";
-import { useQuill } from "react-quilljs";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,8 +8,9 @@ import { useNavigate, useRouteLoaderData } from "react-router";
 import type { User } from "@supabase/supabase-js";
 import { toast } from "react-toastify";
 import slugify from "../../lib/slug";
+import JoditEditor from "jodit-react";
+import "../../article.css";
 
-// Schema untuk validasi form
 const articleSchema = z.object({
   image: z.any().refine((files) => files?.length === 1, "Image required."),
   title: z.string().min(3, "Title minimum 3 characters"),
@@ -19,18 +18,17 @@ const articleSchema = z.object({
 });
 
 const AddArticle = () => {
-  const { quillRef, quill } = useQuill({ placeholder: "Content" });
   const routeData = useRouteLoaderData<{ user: User | null }>("admin-root");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const nav = useNavigate();
 
-  // Cegah render jika belum ada data user
   if (!routeData) {
     return <div className="bg-blue-100 min-h-screen"></div>;
   }
 
   const { user } = routeData;
   const [isLoading, setIsLoading] = useState(false);
+  const [content, setContent] = useState("");
 
   const {
     register,
@@ -56,15 +54,12 @@ const AddArticle = () => {
     title,
     image,
   }) => {
-    if (!user) {
-      throw new Error("Harus login");
-    }
+    if (!user) throw new Error("Harus login");
 
     const file = image?.[0] as File;
     const fileName = `${Date.now()}-${file.name}`;
-    const content = quill?.root.innerHTML;
 
-    if (!content || quill.getText().trim() === "") {
+    if (!content || content.trim() === "" || content === "<p><br></p>") {
       toast.error("Content required");
       return;
     }
@@ -102,16 +97,13 @@ const AddArticle = () => {
         .select()
         .maybeSingle();
 
-      if (insertError) {
-        throw new Error(insertError.message);
-      }
+      if (insertError) throw new Error(insertError.message);
 
-      // Reset form
       setIsLoading(false);
       setValue("title", "");
       setValue("description", "");
       setValue("image", null);
-      quill.setText("");
+      setContent("");
       nav(`/article/${slugify(title)}`);
       toast.success("Success create article");
     } catch (e: any) {
@@ -119,11 +111,13 @@ const AddArticle = () => {
       toast.error(e?.message || "Unexpected error");
     }
   };
+
   const handleImageClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
+
   return (
     <ContainerAdmin page="addArticle">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -154,6 +148,7 @@ const AddArticle = () => {
               }}
             />
           </div>
+
           <div>
             {isLongTitle ? (
               <textarea
@@ -164,7 +159,7 @@ const AddArticle = () => {
                 autoFocus
                 {...register("title")}
                 rows={Math.ceil(textTitleValue.length / 30)}
-              ></textarea>
+              />
             ) : (
               <input
                 type="text"
@@ -178,22 +173,35 @@ const AddArticle = () => {
             )}
             <p className="text-red-600 mt-2">{errors.title?.message}</p>
           </div>
-          <div className="w-full">
+
+          <div className="w-full md:w-2/3">
             <div className="w-full flex justify-center items-center">
               <textarea
                 id="desc"
                 placeholder="Description..."
-                className={`outline-none border-b-1 w-full md:w-2/3 text-xl ${
+                className={`outline-none border-b-1 w-full text-xl ${
                   errors.description ? "text-red-600" : ""
                 }`}
                 {...register("description")}
-              ></textarea>
+              />
             </div>
             <p className="text-red-600 mt-2">{errors.description?.message}</p>
           </div>
         </div>
-        <div className="h-96 mb-5">
-          <div ref={quillRef}></div>
+
+        <div className="mb-5">
+          <JoditEditor
+            value={content}
+            config={{
+              readonly: false,
+              height: 400,
+              toolbarAdaptive: false,
+              style: {
+                backgroundColor: "#DBEAFE",
+              },
+            }}
+            onBlur={(newContent) => setContent(newContent)}
+          />
         </div>
 
         <button

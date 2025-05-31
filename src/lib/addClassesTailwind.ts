@@ -2,7 +2,15 @@ export function addTailwindClasses(html: string): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
 
-  const headingClasses: Record<string, string> = {
+  // 1. Proteksi: Hapus semua elemen <script>
+  // Ini dilakukan pertama untuk menghilangkan potensi eksekusi script
+  // atau manipulasi DOM yang tidak diinginkan oleh script tersebut.
+  doc.querySelectorAll("script").forEach((scriptTag) => {
+    scriptTag.remove();
+  });
+
+  // 2. Tambahkan Tailwind classes ke elemen yang ditentukan
+  const elementClasses: Record<string, string> = {
     h1: "text-4xl font-bold",
     h2: "text-3xl font-semibold",
     h3: "text-2xl font-semibold",
@@ -11,44 +19,37 @@ export function addTailwindClasses(html: string): string {
     h6: "text-base font-medium",
     ul: "list-disc list-inside pl-5 my-4",
     ol: "list-decimal list-inside pl-5 my-4",
+    pre: "bg-gray-100 p-4 rounded text-sm overflow-auto mb-4 font-mono",
+    code: "bg-gray-200 px-1 rounded text-sm font-mono",
+    blockquote: "border-l-4 border-gray-400 pl-4 italic text-gray-600 mb-4",
   };
 
-  // Add Tailwind classes to specified elements
-  Object.entries(headingClasses).forEach(([tag, className]) => {
+  Object.entries(elementClasses).forEach(([tag, className]) => {
     doc.querySelectorAll(tag).forEach((el) => {
-      // Ensure el is an HTMLElement to access classList
       if (el instanceof HTMLElement) {
         el.classList.add(...className.split(" "));
       }
     });
   });
 
-  // Remove background-color from all elements
+  // 3. Tambahkan class w-64 ke setiap elemen img
+  doc.querySelectorAll("img").forEach((el) => {
+    if (el instanceof HTMLImageElement) {
+      el.classList.add("w-64");
+    }
+  });
+
+  // 4. Hapus style background-color dan background (jika mengandung warna) dari semua elemen
   doc.querySelectorAll("*").forEach((el) => {
-    // Ensure el is an HTMLElement to access style
     if (el instanceof HTMLElement) {
       if (el.style.backgroundColor) {
         el.style.removeProperty("background-color");
       }
-      // Also check for background property if it might contain a color
-      // This is a simpler check; more robust parsing might be needed for complex 'background' shorthand
-      if (
-        el.style.background &&
-        (el.style.background.includes("rgb") ||
-          el.style.background.includes("#") ||
-          el.style.background
-            .match(/\b[a-zA-Z]+\b/g)
-            ?.some((color) => CSS.supports("color", color)))
-      ) {
-        // If we're sure background is only for color, we can remove it.
-        // However, 'background' can contain images, position, repeat etc.
-        // A safer approach for complex 'background' properties would be to parse them
-        // and only remove the color component, which is more involved.
-        // For now, if we detect a color, we'll clear the background.
-        // If you need to preserve other background properties (image, repeat, etc.),
-        // this part will need more sophisticated logic.
-        // A simple removal if it seems to be only a color:
+      // Cek juga properti 'background' shorthand
+      if (el.style.background) {
         const potentialColor = el.style.background.trim();
+        // CSS.supports('color', value) bisa digunakan untuk cek apakah sebuah string adalah warna yang valid
+        // Ini adalah pengecekan sederhana; untuk kasus yang lebih kompleks mungkin perlu parsing yang lebih detail
         if (
           CSS.supports("color", potentialColor) ||
           potentialColor.startsWith("#") ||
@@ -56,11 +57,14 @@ export function addTailwindClasses(html: string): string {
         ) {
           el.style.removeProperty("background");
         }
-        // If you want to be more aggressive and remove any 'background' that might have a color:
-        // el.style.removeProperty("background");
       }
     }
   });
 
+  // Penting: DOMParser sendiri biasanya tidak mengeksekusi script saat parsing 'text/html'.
+  // Namun, menghapusnya adalah praktik terbaik jika HTML akan disisipkan kembali ke DOM live
+  // atau jika ada keraguan tentang bagaimana output akan digunakan.
+  // Yang dikembalikan adalah innerHTML dari body, jadi script di head juga tidak akan masuk
+  // jika tidak dihapus secara eksplisit (namun querySelectorAll('script') di atas akan menangkap semua).
   return doc.body.innerHTML;
 }

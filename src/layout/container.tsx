@@ -61,10 +61,10 @@ const Container: FC<ContainerProps> = ({ children, page = "home" }) => {
             <img src="/email_icon.png" className="w-8 h-8" alt="" />
           </div>
           <div className="bg-gray-900 p-5 text-white w-full">
-            <h1 className="font-semibold md:text-lg text-sm">
+            <span className="font-semibold md:text-lg text-sm">
               Copyright © {new Date().getFullYear()} SwasthaRaksha -
               All Rights Reserved
-            </h1>
+            </span>
           </div>
         </footer>
       </div>

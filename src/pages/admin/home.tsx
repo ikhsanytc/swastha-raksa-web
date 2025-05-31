@@ -14,9 +14,9 @@ const HomeAdmin = () => {
       </div>
       <div className="mb-5">
         <h1 className="text-3xl font-bold">FEATURES</h1>
-        <ul className="list-decimal px-5">
+        <ol className="list-decimal px-5">
           <li className="font-semibold text-2xl">
-            <h1 className="text-2xl">Add Article</h1>
+            <span className="text-2xl">Add Article</span>
             <p className="text-base font-normal">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat
               aliquam necessitatibus totam ut explicabo fugit, id accusantium
@@ -24,14 +24,14 @@ const HomeAdmin = () => {
             </p>
           </li>
           <li className="font-semibold text-2xl">
-            <h1 className="text-2xl">Edit Article</h1>
+            <span className="text-2xl">Edit Article</span>
             <p className="text-base font-normal">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat
               aliquam necessitatibus totam ut explicabo fugit, id accusantium
               optio quidem iure.
             </p>
           </li>
-        </ul>
+        </ol>
       </div>
     </ContainerAdmin>
   );

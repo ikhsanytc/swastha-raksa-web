@@ -42,7 +42,7 @@ const ContainerArticle: FC<ContainerArticleProps> = ({
             <Link to={`/article/edit/${article.slug}`}>
               <div className="lg:mx-14 mx-5 p-2 flex gap-1 text-blue-500 mb-5 cursor-pointer hover:bg-slate-500/20 rounded w-fit transition duration-150">
                 <PencilIcon width={24} />
-                <h1 className="text-xl">Edit this article</h1>
+                <span className="text-xl">Edit this article</span>
               </div>
             </Link>
           )}
@@ -53,10 +53,10 @@ const ContainerArticle: FC<ContainerArticleProps> = ({
             <img src="/email_icon.png" className="w-8 h-8" alt="" />
           </div>
           <div className="bg-gray-900 p-5 text-white w-full">
-            <p className="font-semibold md:text-lg text-sm">
+            <span className="font-semibold md:text-lg text-sm">
               Copyright © {new Date().getFullYear()} SwasthaRaksha -
               All Rights Reserved
-            </p>
+            </span>
           </div>
         </footer>
       </div>

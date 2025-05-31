@@ -45,7 +45,7 @@ const VisiAndMisi = () => {
       </div>
       <div>
         <h2 className="text-2xl font-semibold hover:underline">Mission</h2>
-        <ul className="list-decimal text-xl leading-relaxed font-light px-5">
+        <ol className="list-decimal text-xl leading-relaxed font-light px-5">
           {misi.map((mission, idx) => (
             <li className="" key={idx}>
               <span className="font-semibold">{mission.title}</span>
@@ -53,7 +53,7 @@ const VisiAndMisi = () => {
               {mission.content}
             </li>
           ))}
-        </ul>
+        </ol>
       </div>
     </section>
   );
