@@ -42,7 +42,7 @@ blockquote {
 
 /* Horizontal rule */
 hr {
-  @apply border-t border-gray-300 my-6;
+  @apply border-t;
 }
 
 /* Table */
