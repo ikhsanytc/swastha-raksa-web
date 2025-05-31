@@ -85,13 +85,13 @@ const NavbarMobile: FC<NavbarMobileProps> = ({
               <img src="/logo.png" className="w-9 rounded-full" alt="" />
             </Link>
             <Link to="/">
-              <p
+              <span
                 className={`${
                   isArticle && isAtTop ? "text-black" : "text-white"
                 } text-xl font-semibold`}
               >
                 Swastha Raksa
-              </p>
+              </span>
             </Link>
           </div>
           <MagnifyingGlassIcon
