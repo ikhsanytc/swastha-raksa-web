@@ -6,7 +6,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "../../lib/supabase";
-import { useRouteLoaderData } from "react-router";
+import { useNavigate, useRouteLoaderData } from "react-router";
 import type { User } from "@supabase/supabase-js";
 import { toast } from "react-toastify";
 import slugify from "../../lib/slug";
@@ -22,6 +22,7 @@ const AddArticle = () => {
   const { quillRef, quill } = useQuill({ placeholder: "Content" });
   const routeData = useRouteLoaderData<{ user: User | null }>("admin-root");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const nav = useNavigate();
 
   // Cegah render jika belum ada data user
   if (!routeData) {
@@ -88,14 +89,18 @@ const AddArticle = () => {
         data: { publicUrl },
       } = supabase.storage.from("thumbnail").getPublicUrl(uploadData.path);
 
-      const { error: insertError } = await supabase.from("article").insert({
-        slug: slugify(title),
-        title,
-        description,
-        content,
-        id_user: user.id,
-        thumbnail: publicUrl,
-      });
+      const { error: insertError } = await supabase
+        .from("article")
+        .insert({
+          slug: slugify(title),
+          title,
+          description,
+          content,
+          id_user: user.id,
+          thumbnail: publicUrl,
+        })
+        .select()
+        .maybeSingle();
 
       if (insertError) {
         throw new Error(insertError.message);
@@ -107,6 +112,7 @@ const AddArticle = () => {
       setValue("description", "");
       setValue("image", null);
       quill.setText("");
+      nav(`/article/${slugify(title)}`);
       toast.success("Success create article");
     } catch (e: any) {
       setIsLoading(false);
