@@ -55,3 +55,7 @@
 .container em {
   @apply italic;
 }
+
+.container a {
+  @apply text-blue-500 underline hover:text-blue-600;
+}
