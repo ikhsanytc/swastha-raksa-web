@@ -25,10 +25,13 @@ const FotoFoto = () => {
         comprehend adolescent's battle against smoking, creating an informative
         haven for everyone. Click on the title to broaden your knowledge!
       </p>
-      <div className="mt-5 flex gap-20 flex-wrap justify-center">
+      <div className="mt-5 flex gap-20 flex-wrap justify-center items-center">
         {!isLoading &&
           articles?.map((item, idx) => (
-            <div className="flex flex-col gap-4" key={idx}>
+            <div
+              className="flex flex-col gap-4 justify-center items-center"
+              key={idx}
+            >
               <img
                 src={item.thumbnail}
                 className="w-64 h-64 object-cover object-center"
