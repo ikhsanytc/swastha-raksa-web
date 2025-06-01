@@ -14,6 +14,7 @@ const FotoFoto = () => {
       setIsLoading(false);
     })();
   }, []);
+
   return (
     <section id="foto-foto">
       <h1 className="font-semibold mb-5 md:text-4xl text-3xl hover:underline">
