@@ -1,5 +1,6 @@
 import type { FC } from "react";
-import { addTailwindClasses } from "../../lib/addClassesTailwind";
+import { parserHTML } from "../../lib/parserHTML";
+import styles from "../../pages/article.module.css";
 // import "../../article.css";
 
 type ContentProps = {
@@ -10,9 +11,9 @@ const Content: FC<ContentProps> = ({ content }) => {
   return (
     <div
       dangerouslySetInnerHTML={{
-        __html: addTailwindClasses(content),
+        __html: parserHTML(content),
       }}
-      className="mt-32"
+      className={`mt-32 ${styles.container}`}
     ></div>
   );
 };

@@ -9,7 +9,7 @@ import type { User } from "@supabase/supabase-js";
 import { toast } from "react-toastify";
 import slugify from "../../lib/slug";
 import JoditEditor from "jodit-react";
-import "../../article.css";
+import styles from "../article.module.css";
 
 const articleSchema = z.object({
   image: z.any().refine((files) => files?.length === 1, "Image required."),
@@ -189,7 +189,7 @@ const AddArticle = () => {
           </div>
         </div>
 
-        <div className="mb-5">
+        <div className={`mb-5 ${styles.container}`}>
           <JoditEditor
             value={content}
             config={{

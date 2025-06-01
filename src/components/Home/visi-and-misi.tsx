@@ -45,12 +45,12 @@ const VisiAndMisi = () => {
       </div>
       <div>
         <h2 className="text-2xl font-semibold hover:underline">Mission</h2>
-        <ol className="list-decimal text-xl leading-relaxed font-light px-5">
+        <ol className="text-xl leading-relaxed">
           {misi.map((mission, idx) => (
-            <li className="" key={idx}>
-              <span className="font-semibold">{mission.title}</span>
+            <li className="mb-3 font-semibold" key={idx}>
+              <span>{mission.title}</span>
               <br />
-              {mission.content}
+              <span className="font-light">{mission.content}</span>
             </li>
           ))}
         </ol>

@@ -41,12 +41,11 @@ const SidebarDesktop: FC<SidebarDesktopProps> = ({
                 {item.title}
               </Link>
             ))}
-            <Link
-              to={user ? "/admin" : "/admin/login"}
-              className="font-light hover:text-white/80"
-            >
-              {user ? "Admin" : "Login"}
-            </Link>
+            {user && (
+              <Link to="/admin" className="font-light hover:text-white/80">
+                Admin
+              </Link>
+            )}
           </>
         )}
         {admin &&

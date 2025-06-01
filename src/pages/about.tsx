@@ -58,7 +58,7 @@ const About = () => {
             <h2 className="text-2xl font-semibold">How We Create Change:</h2>
             <ol className="list-decimal px-5">
               {aboutTexts.map((item, idx) => (
-                <li key={idx} className="text-xl font-semibold">
+                <li key={idx} className="text-xl font-semibold mb-3">
                   <span className="text-xl mt-2 font-semibold">
                     {item.title}
                   </span>

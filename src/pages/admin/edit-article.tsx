@@ -9,6 +9,7 @@ import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import JoditEditor from "jodit-react";
+import styles from "../article.module.css";
 
 const editArticleScheme = z.object({
   image: z.any(),
@@ -198,7 +199,7 @@ const EditArticle = () => {
           </div>
         </div>
 
-        <div className="mb-5">
+        <div className={`mb-5 ${styles.container}`}>
           <JoditEditor
             ref={editorRef}
             value={content}
