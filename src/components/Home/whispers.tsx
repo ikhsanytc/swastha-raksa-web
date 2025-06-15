@@ -11,7 +11,7 @@ const Whispers = () => {
       </p>
       <div className="flex justify-center items-center">
         <a
-          href="https://github.com/AdityaWs/SwasthaRaksa/releases/download/v1.0.0/SwasthaRaksa.apk"
+          href="https://github.com/AdityaWs/SwasthaRaksa/releases/download/v1.0.1/SwasthaRaksa.apk"
           target="_blank"
           className="mt-10 text-center border-2 border-black px-20 py-2 rounded text-sm font-light cursor-pointer hover:scale-105 active:scale-110 transition duration-150"
         >
